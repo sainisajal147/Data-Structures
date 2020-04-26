@@ -6,76 +6,56 @@ typedef struct node
     struct node* right;
     int ht;
 } node; */
-#include<queue>
-int h(node * root) //getting height
+int height(node * root)
 {
-    if(root==NULL)
-        return -1;
+    if(root==NULL) return -1;
     else
     {
-        int hl=h(root->left);
-        int hr=h(root->right);
+        int hl=height(root->left);
+        int hr=height(root->right);
         return max(hl,hr)+1;
     }
 }
-node * getnew(int v)// for getting new node
+node * newnode(int data)
 {
-    node * newn=new node();
-    newn->val=v;
+    node * newn = new node();
+    newn->val=data;
     newn->left=NULL;
     newn->right=NULL;
     newn->ht=0;
     return newn;
 }
-void ino(node * root)// just an inorder traversal
+int bf(node * root)
 {
-    if(root==NULL)
-    {
-        return;
-    }
-    else
-    {
-        ino(root->left);
-        cout<<root->val<<" ";
-        ino(root->right);
-    }
+    return height(root->left)-height(root->right);
 }
-
-int getBalance(node *Nod)//to get balance factor
-{
-    if (Nod == NULL)
-        return 0;
-    return h(Nod->left) - h(Nod->right);
-}
-
-
-node * rightr(node * root)//actually left to right rotation
-{
-    node * temp=root->left;
-    node * temp1=temp->right;
-    
-    temp->right=root;
-    root->left=temp1;
-    root->ht=max(h(root->left),h(root->right))+1;
-    temp->ht=max(h(temp->left),h(temp->right))+1;
-    return temp;
-}
-node * leftr(node * root) //actually right to left rotation
+node * rr(node * root)
 {
     node * temp=root->right;
     node * temp1=temp->left;
     
     temp->left=root;
     root->right=temp1;
-    root->ht=max(h(root->left),h(root->right))+1;
-    temp->ht=max(h(temp->left),h(temp->right))+1;
+    root->ht=max(height(root->left),height(root->right))+1;
+    temp->ht=max(height(temp->left),height(temp->right))+1;
+    return temp;
+}
+node * ll(node * root)
+{
+    node * temp=root->left;
+    node * temp1=temp->right;
+    
+    temp->right=root;
+    root->left=temp1;
+    root->ht=max(height(root->left),height(root->right))+1;
+    temp->ht=max(height(temp->left),height(temp->right))+1;
     return temp;
 }
 
 node * insert(node * root,int val)
 {
     if(root==NULL)
-        root=getnew(val);
+        root=newnode(val);
     else
     {
         if(root->val>val)
@@ -89,7 +69,7 @@ node * insert(node * root,int val)
     while(!q.empty())
     {
         node * curr=q.front();
-        curr->ht=h(curr);
+        curr->ht=height(curr);
         if(curr->left!=NULL)
             q.push(curr->left);
         if(curr->right!=NULL)
@@ -97,32 +77,31 @@ node * insert(node * root,int val)
         q.pop();
     }
     
-    root->ht = 1 + max(h(root->left), h(root->right));
+    root->ht = 1 + max(height(root->left), height(root->right));
 
     //Get the balance factor of parent node
-    int balance = getBalance(root);
+    int balance = bf(root);
     //left left case
     if (balance > 1 && val < root->left->val)
-        return rightr(root);
+        return ll(root);
 
     // Right Right Case
     if (balance < -1 && val > root->right->val)
-        return leftr(root);
+        return rr(root);
 
     // Left Right Case
     if (balance > 1 && val > root->left->val)
     {
-        root->left = leftr(root->left);
-        return rightr(root);
+        root->left = rr(root->left);
+        return ll(root);
     }
 
     // Right Left Case
     if (balance < -1 && val < root->right->val)
     {
-        root->right = rightr(root->right);
-        return leftr(root);
+        root->right = ll(root->right);
+        return rr(root);
     }
     
   return root;
 }
-
