@@ -1,4 +1,4 @@
-#did not consider the heapify function
+//did not consider the heapify function
 #include <cmath>
 #include <cstdio>
 #include <vector>
