@@ -1,1 +1,1 @@
-Data Structures and thier Algorithms
+Contains Few important Data Structures and thier Algorithms.
